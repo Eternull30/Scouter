@@ -2,14 +2,35 @@
 venv/
 __pycache__/
 *.pyc
+*.pyo
 .env
 
 # Alembic
 alembic/versions/*.pyc
 
-# Android
+# Celery
+celerybeat-schedule
+celerybeat.pid
 
+# Android
+android/.gradle/
+android/.idea/
+android/build/
+android/app/build/
+android/local.properties
+android/**/*.iml
+android/.DS_Store
+android/captures/
+
+# IDE
+.idea/
+*.iml
+.vscode/
 
 # General
 .DS_Store
 *.log
+*.tmp
+Thumbs.db
+
+celerybeat-schedule
