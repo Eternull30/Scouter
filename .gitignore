@@ -1,0 +1,15 @@
+# Python
+venv/
+__pycache__/
+*.pyc
+.env
+
+# Alembic
+alembic/versions/*.pyc
+
+# Android
+
+
+# General
+.DS_Store
+*.log
