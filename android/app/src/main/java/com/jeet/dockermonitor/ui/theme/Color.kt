@@ -2,10 +2,15 @@ package com.jeet.dockermonitor.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFFD0BCFF)
-val PurpleGrey80 = Color(0xFFCCC2DC)
-val Pink80 = Color(0xFFEFB8C8)
+// Status colors
+val RunningGreen = Color(0xFF4CAF50)
+val StoppedRed = Color(0xFFFF5252)
+val WarningAmber = Color(0xFFFFB300)
 
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF625b71)
-val Pink40 = Color(0xFF7D5260)
+// Chart colors
+val CpuChartColor = Color(0xFF7C4DFF)      // purple
+val MemoryChartColor = Color(0xFF00BCD4)   // teal
+val NetworkRxColor = Color(0xFF4CAF50)     // green
+val NetworkTxColor = Color(0xFFFF5722)     // orange
+val DiskReadColor = Color(0xFF2196F3)      // blue
+val DiskWriteColor = Color(0xFFFF9800)     // amber

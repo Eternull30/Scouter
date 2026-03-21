@@ -46,8 +46,8 @@ fun AppNavigation(){
             if (savedHost != null){
                 host = savedHost
                 port = savedPort
-                val baseUrl = "http://$savedHost:$savedPort"
-                val wsUrl = "ws://$savedHost:$savedPort"
+                val baseUrl = if (savedPort == 443) "https://$savedHost/" else "http://$savedHost:$savedPort/"
+                val wsUrl = if (savedPort == 443) "wss://$savedHost" else "ws://$savedHost:$savedPort"
                 repository = DockerRepository(createApiService(baseUrl), wsUrl)
                 currentScreen = "dashboard"
             }
@@ -107,8 +107,8 @@ fun AppNavigation(){
                     }
                     host = address
                     port = portNum
-                    val baseUrl = "http://$address:$portNum/"
-                    val wsUrl = "ws://$address:$portNum"
+                    val baseUrl = if (portNum == 443) "https://$address/" else "http://$address:$portNum/"
+                    val wsUrl = if (portNum == 443) "wss://$address" else "ws://$address:$portNum"
                     repository = DockerRepository(createApiService(baseUrl), wsUrl)
                     currentScreen = "dashboard"
                 }

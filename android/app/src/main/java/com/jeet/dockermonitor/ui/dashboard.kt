@@ -20,6 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.jeet.dockermonitor.data.model.Container
 import retrofit2.http.OPTIONS
+import com.jeet.dockermonitor.ui.theme.RunningGreen
+import com.jeet.dockermonitor.ui.theme.StoppedRed
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -111,8 +113,7 @@ fun ContainerCard(container: Container, onClick: ()-> Unit){
             Icon(
                 imageVector = Icons.Default.Circle ,
                 contentDescription = null,
-                tint = if(container.state == "running") Color(0xFF4CAF50)
-                else Color(0xFFE53935),
+                tint = if (container.state == "running") RunningGreen else StoppedRed,
                 modifier  = Modifier.height(12.dp)
             )
             Spacer(modifier = Modifier.height(12.dp))
