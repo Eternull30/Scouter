@@ -3,7 +3,7 @@
     <img src="./assets/Scouter.png" alt="Scouter logo" title="Scouter logo" width="100"/>
     <br>
 
-    </div>
+</div>    
 
 # Scouter 
 
