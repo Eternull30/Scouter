@@ -18,9 +18,9 @@ import java.util.concurrent.TimeUnit
 
 class DockerRepository(private val api: ApiService, private val wsBaseUrl:String){
 
-    suspend fun getContainers(): UiState<List<Container>>{
+    suspend fun getContainers(all: Boolean =false): UiState<List<Container>>{
         return try {
-            UiState.Success(api.getContainers())
+            UiState.Success(api.getContainers(all = all))
         }catch (e: Exception){
             UiState.Error(e.message ?: "Unknown Error")
         }

@@ -10,7 +10,9 @@ import retrofit2.http.Query
 
 interface ApiService {
     @GET("containers/")
-    suspend fun getContainers(): List<Container>
+    suspend fun getContainers(
+        @Query("all") all: Boolean = false
+    ): List<Container>
 
     @GET("containers/{id}/stats")
     suspend fun getStats(@Path("id")id: String): LiveStat

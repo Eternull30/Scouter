@@ -21,6 +21,7 @@ import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.isSystemInDarkTheme
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
+import com.github.mikephil.charting.data.DataSet
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -75,61 +76,90 @@ fun DetailScreen(
             index++
 
             // CPU chart
+            // CPU chart
             cpuChart.value?.apply {
-                val dataSet = LineDataSet(cpuData.toList(), "CPU %").apply {
-                    color = CpuChartColor.toArgb()
-                    setDrawCircles(false)
-                    lineWidth = 2.5f
-                    setDrawFilled(true)
-                    fillColor = CpuChartColor.toArgb()
-                    fillAlpha = 40
-                    mode = LineDataSet.Mode.CUBIC_BEZIER
-                    setDrawValues(false)
+                if (data == null) {
+                    val dataSet = LineDataSet(cpuData.toList(), "CPU %").apply {
+                        color = CpuChartColor.toArgb()
+                        setDrawCircles(false)
+                        lineWidth = 2.5f
+                        setDrawFilled(true)
+                        fillColor = CpuChartColor.toArgb()
+                        fillAlpha = 40
+                        mode = LineDataSet.Mode.CUBIC_BEZIER
+                        setDrawValues(false)
+                        isHighlightEnabled = false
+                    }
+                    data = LineData(dataSet)
+                } else {
+                    val dataSet = data.getDataSetByIndex(0) as LineDataSet
+                    dataSet.values = cpuData.toList()
+                    dataSet.notifyDataSetChanged()
                 }
-                data = LineData(dataSet)
                 setBackgroundColor(chartBgColor)
+                data.notifyDataChanged()
                 notifyDataSetChanged()
-                invalidate()
+                setVisibleXRangeMaximum(30f)
+                moveViewToX(data.entryCount.toFloat())
             }
 
             // Memory chart
             memChart.value?.apply {
-                val dataSet = LineDataSet(memData.toList(), "Memory MB").apply {
-                    color = MemoryChartColor.toArgb()
-                    setDrawCircles(false)
-                    lineWidth = 2.5f
-                    setDrawFilled(true)
-                    fillColor = MemoryChartColor.toArgb()
-                    fillAlpha = 40
-                    mode = LineDataSet.Mode.CUBIC_BEZIER
-                    setDrawValues(false)
+                if (data == null) {
+                    val dataSet = LineDataSet(memData.toList(), "Memory MB").apply {
+                        color = MemoryChartColor.toArgb()
+                        setDrawCircles(false)
+                        lineWidth = 2.5f
+                        setDrawFilled(true)
+                        fillColor = MemoryChartColor.toArgb()
+                        fillAlpha = 40
+                        mode = LineDataSet.Mode.CUBIC_BEZIER
+                        setDrawValues(false)
+                        isHighlightEnabled = false
+                    }
+                    data = LineData(dataSet)
+                }else {
+                    val dataSet = data.getDataSetByIndex(0) as LineDataSet
+                    dataSet.values = memData.toList()
+                    dataSet.notifyDataSetChanged()
                 }
-                data = LineData(dataSet)
                 setBackgroundColor(chartBgColor)
+                data.notifyDataChanged()
                 notifyDataSetChanged()
-                invalidate()
+                setVisibleXRangeMaximum(30f)
+                moveViewToX(data.entryCount.toFloat())
             }
 
             // Network chart
             netChart.value?.apply {
-                val rxSet = LineDataSet(netRxData.toList(), "RX KB").apply {
-                    color = NetworkRxColor.toArgb()
-                    setDrawCircles(false)
-                    lineWidth = 2.5f
-                    mode = LineDataSet.Mode.CUBIC_BEZIER
-                    setDrawValues(false)
+                if (data == null) {
+                    val rxSet = LineDataSet(netRxData.toList(), "RX KB").apply {
+                        color = NetworkRxColor.toArgb()
+                        setDrawCircles(false)
+                        lineWidth = 2.5f
+                        mode = LineDataSet.Mode.CUBIC_BEZIER
+                        setDrawValues(false)
+                        isHighlightEnabled = false
+                    }
+                    val txSet = LineDataSet(netTxData.toList(), "TX KB").apply {
+                        color = NetworkTxColor.toArgb()
+                        setDrawCircles(false)
+                        lineWidth = 2.5f
+                        mode = LineDataSet.Mode.CUBIC_BEZIER
+                        setDrawValues(false)
+                        isHighlightEnabled = false
+                    }
+                    data = LineData(rxSet, txSet)
+                } else {
+                    (data.getDataSetByIndex(0) as LineDataSet).values = netRxData.toList()
+                    (data.getDataSetByIndex(1) as LineDataSet).values = netTxData.toList()
+                    data.notifyDataChanged()
                 }
-                val txSet = LineDataSet(netTxData.toList(), "TX KB").apply {
-                    color = NetworkTxColor.toArgb()
-                    setDrawCircles(false)
-                    lineWidth = 2.5f
-                    mode = LineDataSet.Mode.CUBIC_BEZIER
-                    setDrawValues(false)
-                }
-                data = LineData(rxSet, txSet)
                 setBackgroundColor(chartBgColor)
+                data.notifyDataChanged()
                 notifyDataSetChanged()
-                invalidate()
+                setVisibleXRangeMaximum(30f)
+                moveViewToX(data.entryCount.toFloat())
             }
         }
     }
@@ -279,60 +309,66 @@ fun DetailScreen(
             ) {
                 Button(
                     onClick = onStart,
-                    modifier = Modifier.weight(1f)
+                    modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
                 ) {
-                    Icon(Icons.Default.PlayArrow, contentDescription = null)
-                    Spacer(Modifier.width(4.dp))
-                    Text("Start")
+                    Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(2.dp))
+                    Text("Start", fontSize = 12.sp, maxLines = 1)
                 }
                 Button(
                     onClick = onStop,
                     modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.error
                     )
                 ) {
-                    Icon(Icons.Default.Stop, contentDescription = null)
-                    Spacer(Modifier.width(4.dp))
-                    Text("Stop")
+                    Icon(Icons.Default.Stop, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(2.dp))
+                    Text("Stop", fontSize = 12.sp, maxLines = 1)
                 }
                 Button(
                     onClick = onRestart,
                     modifier = Modifier.weight(1f),
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorScheme.secondary
                     )
                 ) {
-                    Icon(Icons.Default.Refresh, contentDescription = null)
-                    Spacer(Modifier.width(4.dp))
-                    Text("Restart")
+                    Icon(Icons.Default.Refresh, contentDescription = null, modifier = Modifier.size(16.dp))
+                    Spacer(Modifier.width(2.dp))
+                    Text("Restart", fontSize = 12.sp, maxLines = 1)
                 }
             }
         }
     }
 }
 
-private fun setupChart(chart: LineChart, labelColor: Int, gridColor: Int) {
+private fun setupChart(chart: LineChart, labelColor: Int, gridLineColor: Int) {
     chart.apply {
         description.isEnabled = false
         setTouchEnabled(false)
+        setHardwareAccelerationEnabled(true)
         isDragEnabled = false
         setScaleEnabled(false)
         setDrawGridBackground(false)
+        isAutoScaleMinMaxEnabled = true
+        setVisibleXRangeMaximum(30f)
         legend.apply {
             isEnabled = true
             textColor = labelColor
         }
         axisRight.isEnabled = false
         axisLeft.apply {
-            this.textColor = textColor
-            this.gridColor = gridColor
+            textColor = labelColor
+            gridColor = gridLineColor
             gridLineWidth = 0.5f
         }
         xAxis.apply {
             position = XAxis.XAxisPosition.BOTTOM
-            this.textColor = textColor
-            this.gridColor = gridColor
+            textColor = labelColor
+            gridColor = gridLineColor
             gridLineWidth = 0.5f
             setDrawLabels(false)
         }

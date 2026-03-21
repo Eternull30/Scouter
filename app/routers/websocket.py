@@ -11,25 +11,24 @@ router = APIRouter(tags=["websocket"])
 
 @router.websocket("/ws/containers/{container_id}/stats")
 async def websocket_stats(websocket: WebSocket, container_id: str):
-    """
-    WebSocket endpoint that streams live container stats.
-    The Android app connects here and receives stats every second.
-
-    Connect with: ws://localhost:8000/ws/containers/nginx-test/stats
-    """
     await websocket.accept()
     print(f"[WS] Client connected for container: {container_id}")
+    
+    is_connected = True
 
     try:
-        # Open a streaming connection to Docker Remote API
         async with httpx.AsyncClient() as client:
             async with client.stream(
                 "GET",
                 f"{settings.docker_host}/containers/{container_id}/stats",
                 params={"stream": "true"},
-                timeout=None,  # keep alive indefinitely
+                timeout=None,
             ) as response:
                 async for line in response.aiter_lines():
+                    # Stop streaming if client disconnected
+                    if not is_connected:
+                        break
+                        
                     if not line.strip():
                         continue
                     try:
@@ -47,7 +46,13 @@ async def websocket_stats(websocket: WebSocket, container_id: str):
                             "disk_write_kb": parsed.disk_write_kb,
                             "timestamp": parsed.timestamp.isoformat(),
                         })
+                    except WebSocketDisconnect:
+                        is_connected = False
+                        break
                     except Exception as parse_err:
+                        if "close message" in str(parse_err):
+                            is_connected = False
+                            break
                         print(f"[WS] Parse error: {parse_err}")
                         continue
 
@@ -55,8 +60,10 @@ async def websocket_stats(websocket: WebSocket, container_id: str):
         print(f"[WS] Client disconnected: {container_id}")
     except Exception as e:
         print(f"[WS] Error: {e}")
+    finally:
+        is_connected = False
+        print(f"[WS] Stream closed for: {container_id}")
         try:
-            await websocket.send_json({"error": str(e)})
+            await websocket.close()
         except Exception:
             pass
-        await websocket.close()

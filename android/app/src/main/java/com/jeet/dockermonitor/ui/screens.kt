@@ -59,7 +59,7 @@ fun AppNavigation(){
             val repo = repository ?: return@LaunchedEffect
             isLoadingContainers = true
             containersError = ""
-            when (val result = repo.getContainers()) {
+            when (val result = repo.getContainers(all = true)) {
                 is UiState.Success -> {
                     containers = result.data
                     isLoadingContainers = false
@@ -82,7 +82,7 @@ fun AppNavigation(){
             liveStat = null
             try {
                 repo.observeLiveStats(container.name)
-                    .sample(2000) // update UI every 2 seconds instead of every second
+                    .sample(500) // update UI every 0.5 seconds instead of every second
                     .collectLatest { stat ->
                         liveStat = stat
                     }
@@ -124,7 +124,7 @@ fun AppNavigation(){
                     val repo = repository ?: return@launch
                     isLoadingContainers = true
                     containersError = ""
-                    when (val result = repo.getContainers()) {
+                    when (val result = repo.getContainers(all= true)) {
                         is UiState.Success -> {
                             containers = result.data
                             isLoadingContainers = false
@@ -140,7 +140,18 @@ fun AppNavigation(){
             onContainerClick = { container ->
                 selectedContainer = container
                 currentScreen = "detail"
-            }
+            },
+            onDisconnect = {
+                scope.launch {
+                    // Clear saved host from DataStore
+                    context.dataStore.edit { prefs ->
+                        prefs.remove(KEY_HOST)
+                        prefs.remove(KEY_PORT)
+                    }
+                    repository = null
+                    containers = emptyList()
+                    currentScreen = "setup"
+                }}
         )
 
         "detail" -> DetailScreen(
