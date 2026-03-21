@@ -1,3 +1,7 @@
+<br>
+    <img src="./assets/Scouter.png" alt="Scouter logo" title="Scouter logo" width="100"/>
+    <br>
+
 # Scouter 
 
 A full-stack native Android application for real-time Docker container monitoring and analytics. Just like a Scouter reads power levels in Dragon Ball, Scouter reads your container's CPU, memory, network, and disk stats in real time - directly on your Android phone from anywhere in the world.
