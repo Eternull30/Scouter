@@ -1,6 +1,6 @@
 <div align="center">
 <br>
-    <img src="./assets/icon.png" alt="Scouter logo" title="Scouter logo" width="100"/>
+    <img src="./assets/icon.png" alt="Scouter logo" title="Scouter logo" width="150"/>
     <br>
 
 </div>    
