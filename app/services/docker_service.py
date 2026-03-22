@@ -104,18 +104,21 @@ class DockerService:
         CPU % requires delta calculation between two readings.
         """
         # CPU % calculation
-        cpu_delta = (
-            raw["cpu_stats"]["cpu_usage"]["total_usage"]
-            - raw["precpu_stats"]["cpu_usage"]["total_usage"]
+        try:
+            cpu_delta = (
+                raw["cpu_stats"]["cpu_usage"]["total_usage"]
+                - raw["precpu_stats"]["cpu_usage"]["total_usage"]
         )
-        system_delta = (
-            raw["cpu_stats"]["system_cpu_usage"]
-            - raw["precpu_stats"]["system_cpu_usage"]
+            system_delta = (
+                raw["cpu_stats"]["system_cpu_usage"]
+                - raw["precpu_stats"]["system_cpu_usage"]
         )
-        num_cpus = raw["cpu_stats"].get("online_cpus", 1)
-        cpu_percent = 0.0
-        if system_delta > 0 and cpu_delta > 0:
-            cpu_percent = (cpu_delta / system_delta) * num_cpus * 100.0
+            num_cpus = raw["cpu_stats"].get("online_cpus", 1)
+            cpu_percent = 0.0
+            if system_delta > 0 and cpu_delta > 0:
+                cpu_percent = (cpu_delta / system_delta) * num_cpus * 100.0
+        except KeyError:
+            cpu_percent = 0.0
 
         # Memory
         memory_usage = raw["memory_stats"].get("usage", 0)
