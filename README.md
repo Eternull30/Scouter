@@ -3,11 +3,14 @@
     <img src="./assets/icon.png" alt="Scouter logo" title="Scouter logo" width="150"/>
     <br>
 
-</div>    
+    
 
 # Scouter 
-
+</div>
 A full-stack native Android application for real-time Docker container monitoring and analytics. Just like a Scouter reads power levels in Dragon Ball, Scouter reads your container's CPU, memory, network, and disk stats in real time - directly on your Android phone from anywhere in the world.
+
+
+<div align="center">
 
 ![Android](https://img.shields.io/badge/Android-3DDC84?style=flat&logo=android&logoColor=white)
 ![Kotlin](https://img.shields.io/badge/Kotlin-7F52FF?style=flat&logo=kotlin&logoColor=white)
@@ -18,6 +21,11 @@ A full-stack native Android application for real-time Docker container monitorin
 ![Celery](https://img.shields.io/badge/Celery-37814A?style=flat&logo=celery&logoColor=white)
 
 ---
+</div>
+
+# Scouter Demo
+
+https://github.com/user-attachments/assets/42984f71-3c50-43b7-85ae-c73b8a3bebed
 
 ## What is Scouter?
 
@@ -147,8 +155,8 @@ source venv/bin/activate
 
 **3 - Install dependencies:**
 ```bash
-pip install -r requirements.txt --only-binary=:all:
-pip install numpy --only-binary=:all:
+pip install -r requirements.txt
+pip install numpy
 ```
 
 **4 - Create `.env` file:**
@@ -316,7 +324,6 @@ Scouter/
 **Jeet Tanwar** - Second year CS student building full-stack products.
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-0A66C2?style=flat&logo=linkedin&logoColor=white)](https://www.linkedin.com/in/jeet-tanwar/)
-[![GitHub](https://img.shields.io/badge/GitHub-181717?style=flat&logo=github&logoColor=white)](https://github.com/Eternull30)
 
 ---
 
