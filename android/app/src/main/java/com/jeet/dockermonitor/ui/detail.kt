@@ -1,5 +1,6 @@
 package com.jeet.dockermonitor.ui
 
+import android.R
 import android.graphics.Color
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,6 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.material.icons.filled.History
 import com.github.mikephil.charting.charts.LineChart
 import com.github.mikephil.charting.components.XAxis
 import com.github.mikephil.charting.data.DataSet
@@ -42,6 +44,7 @@ fun DetailScreen(
     onStart: () -> Unit,
     onStop: () -> Unit,
     onRestart: () -> Unit,
+    onHistory: () -> Unit,
 ) {
     val isDark = isSystemInDarkTheme()
     val colorScheme = MaterialTheme.colorScheme
@@ -310,7 +313,10 @@ fun DetailScreen(
                 Button(
                     onClick = onStart,
                     modifier = Modifier.weight(1f),
-                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp)
+                    contentPadding = PaddingValues(horizontal = 4.dp, vertical = 8.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = colorScheme.surfaceTint
+                    )
                 ) {
                     Icon(Icons.Default.PlayArrow, contentDescription = null, modifier = Modifier.size(16.dp))
                     Spacer(Modifier.width(2.dp))
@@ -340,6 +346,29 @@ fun DetailScreen(
                     Spacer(Modifier.width(2.dp))
                     Text("Restart", fontSize = 12.sp, maxLines = 1)
                 }
+
+            }
+            Text(
+                text = "History",
+                style = MaterialTheme.typography.titleLarge
+            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ){
+            Button(
+                onClick = onHistory,
+                modifier= Modifier.weight(1f)
+                    .fillMaxWidth(),
+                contentPadding = PaddingValues(vertical = 8.dp),
+
+            ){
+                Icon(imageVector = Icons.Default.History,
+                    contentDescription = null,
+                    modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(2.dp))
+                Text("Show History", fontSize = 12.sp, maxLines = 1)
+            }
             }
         }
     }

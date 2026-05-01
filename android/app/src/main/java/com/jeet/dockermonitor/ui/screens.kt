@@ -8,6 +8,7 @@ import com.jeet.dockermonitor.data.DockerRepository
 import com.jeet.dockermonitor.data.createApiService
 import com.jeet.dockermonitor.data.model.Container
 import com.jeet.dockermonitor.data.model.LiveStat
+import com.jeet.dockermonitor.data.model.StatHistory
 import com.jeet.dockermonitor.data.model.UiState
 import com.jeet.dockermonitor.di.dataStore
 import kotlinx.coroutines.flow.collectLatest
@@ -38,6 +39,10 @@ fun AppNavigation(){
     // Detail state
     var liveStat by remember { mutableStateOf<LiveStat?>(null) }
     var isWsConnected by remember { mutableStateOf(false) }
+
+    //History state
+    var historyList by remember { mutableStateOf<StatHistory?>(null) }
+    var isLoadingHistory by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         context.dataStore.data.collectLatest { prefs ->
@@ -175,7 +180,17 @@ fun AppNavigation(){
                 scope.launch {
                     repository?.restartContainer(selectedContainer?.name ?: "")
                 }
+            },
+            onHistory = {
+                selectedContainer?.let {
+                    currentScreen = "history"
+                }
             }
+        )
+
+        "history" -> HistoryScreen(
+            containerName = selectedContainer?.name ?: "",
+            onBack = {currentScreen = "detail"}
         )
     }
 }
