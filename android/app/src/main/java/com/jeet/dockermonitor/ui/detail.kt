@@ -377,7 +377,7 @@ fun DetailScreen(
 private fun setupChart(chart: LineChart, labelColor: Int, gridLineColor: Int) {
     chart.apply {
         description.isEnabled = false
-        setTouchEnabled(false)
+        setTouchEnabled(true)
         setHardwareAccelerationEnabled(true)
         isDragEnabled = false
         setScaleEnabled(false)
