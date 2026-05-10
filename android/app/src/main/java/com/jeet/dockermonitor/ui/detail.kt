@@ -381,6 +381,7 @@ private fun setupChart(chart: LineChart, labelColor: Int, gridLineColor: Int) {
         setHardwareAccelerationEnabled(true)
         isDragEnabled = false
         setScaleEnabled(false)
+        setPinchZoom(true)
         setDrawGridBackground(false)
         isAutoScaleMinMaxEnabled = true
         setVisibleXRangeMaximum(30f)
