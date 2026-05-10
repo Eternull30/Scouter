@@ -85,11 +85,13 @@ fun HistoryScreen(
             }
             is UiState.Success -> {
                 val history = state.data
-                if (history.isEmpty()){
-                    Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center){
+                if (history.isEmpty()) {
+                    Box(Modifier.fillMaxSize().padding(padding), contentAlignment = Alignment.Center) {
                         Text("No Historical data available for $containerName", color = MaterialTheme.colorScheme.onBackground.copy(0.5f))
                     }
-                }else{
+                } else {
+                    val latest = history.first()
+
                     Column(
                         Modifier
                             .fillMaxSize()
@@ -97,33 +99,35 @@ fun HistoryScreen(
                             .verticalScroll(rememberScrollState())
                             .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
-                    ) { Text(
-                        "Last ${history.size} readings ${history.size * 10/60} minutes",
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
-                    ) }
+                    ) {
+                        // Time info
+                        Text(
+                            "Last ${history.size} readings (${history.size * 10 / 60} minutes)",
+                            style = MaterialTheme.typography.bodySmall,
+                            color = MaterialTheme.colorScheme.onBackground.copy(0.6f)
+                        )
 
-                    val latest = history.first()
-                    Text("Latest State", style = MaterialTheme.typography.titleLarge)
-                    Row(Modifier.fillMaxWidth()
-                        .padding(vertical = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        StatCard("CPU", "${latest.cpu_percent}%", MaterialTheme.colorScheme.primary, Modifier.weight(1f))
-                        StatCard("Memory", "${latest.memory_usage} MB", MaterialTheme.colorScheme.secondary, Modifier.weight(1f))
-                    }
-                    Row(Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                        StatCard("Net RX", "${latest.network_rx} KB", MaterialTheme.colorScheme.tertiary, Modifier.weight(1f))
-                        StatCard("Net TX","${latest.network_tx} KB", MaterialTheme.colorScheme.error, Modifier.weight(1f))
-                    // Chart will go here
-                        ChartCard("CPU Usage(%)") {
+                        // Latest stats title
+                        Text("Latest Stats", style = MaterialTheme.typography.titleLarge)
+
+                        // Stat cards
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            StatCard("CPU", "${latest.cpu_percent}%", MaterialTheme.colorScheme.primary, Modifier.weight(1f))
+                            StatCard("Memory", "${latest.memory_usage} MB", MaterialTheme.colorScheme.secondary, Modifier.weight(1f))
+                        }
+                        Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                            StatCard("Net RX", "${latest.network_rx} KB", MaterialTheme.colorScheme.tertiary, Modifier.weight(1f))
+                            StatCard("Net TX", "${latest.network_tx} KB", MaterialTheme.colorScheme.error, Modifier.weight(1f))
+                        }
+
+                        // CPU Chart
+                        ChartCard("CPU Usage (%)") {
                             AndroidView(
-                                factory = {
-                                    ctx ->
+                                factory = { ctx ->
                                     LineChart(ctx).apply {
                                         setupHistoryChart(this, chartTextColor, chartGridColor)
-                                        val entries = history.mapIndexed { i, s-> Entry(i.toFloat(), s.cpu_percent.toFloat()) }
-                                        val dataset = LineDataSet(entries, "CPU %").apply{
+                                        val entries = history.mapIndexed { i, s -> Entry(i.toFloat(), s.cpu_percent.toFloat()) }
+                                        val dataSet = LineDataSet(entries, "CPU %").apply {
                                             color = CpuChartColor.toArgb()
                                             setDrawCircles(false)
                                             lineWidth = 2f
@@ -132,19 +136,15 @@ fun HistoryScreen(
                                             fillAlpha = 40
                                             setDrawValues(false)
                                         }
-                                        data = LineData(dataset)
+                                        data = LineData(dataSet)
                                         setBackgroundColor(chartBgColor)
                                         invalidate()
                                     }
                                 },
-                                modifier = Modifier. fillMaxWidth().height(200.dp)
-                                    .padding()
-
-
+                                modifier = Modifier.fillMaxWidth().height(200.dp)
                             )
                         }
                     }
-
                 }
             }
         }
