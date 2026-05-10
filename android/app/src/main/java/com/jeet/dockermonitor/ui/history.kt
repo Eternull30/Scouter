@@ -55,7 +55,9 @@ fun HistoryScreen(
                     }
                 }
             )
+            Spacer(Modifier.height(8.dp))
         }
+
     ) { padding ->
         when (val state = historyState) {
             is UiState.Loading->{
