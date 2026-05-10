@@ -137,6 +137,30 @@ fun HistoryScreen(
                                 modifier = Modifier. fillMaxWidth().height(200.dp)
                             )
                         }
+                        ChartCard("Memory Usage(%)") {
+                            AndroidView(
+                                factory = {
+                                        ctx ->
+                                    LineChart(ctx).apply {
+                                        setupHistoryChart(this, chartTextColor, chartGridColor)
+                                        val entries = history.mapIndexed { i, s-> Entry(i.toFloat(), s.memory_usage.toFloat()) }
+                                        val dataset = LineDataSet(entries, "CPU %").apply{
+                                            color = MemoryChartColor.toArgb()
+                                            setDrawCircles(false)
+                                            lineWidth = 2f
+                                            setDrawFilled(true)
+                                            fillColor = MemoryChartColor.toArgb()
+                                            fillAlpha = 40
+                                            setDrawValues(false)
+                                        }
+                                        data = LineData(dataset)
+                                        setBackgroundColor(chartBgColor)
+                                        invalidate()
+                                    }
+                                },
+                                modifier = Modifier. fillMaxWidth().height(200.dp)
+                            )
+                        }
                     }
 
                 }
