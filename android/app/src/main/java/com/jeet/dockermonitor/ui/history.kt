@@ -91,9 +91,9 @@ fun HistoryScreen(
                     Column(
                         Modifier
                             .fillMaxSize()
-                            .padding()
+                            .padding(padding)
                             .verticalScroll(rememberScrollState())
-                            .padding(vertical = 16.dp),
+                            .padding(16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) { Text(
                         "Last ${history.size} readings ${history.size * 10/60} minutes",
@@ -137,30 +137,8 @@ fun HistoryScreen(
                                 },
                                 modifier = Modifier. fillMaxWidth().height(200.dp)
                                     .padding()
-                            )
-                        }
-                        ChartCard("Memory Usage(%)") {
-                            AndroidView(
-                                factory = {
-                                        ctx ->
-                                    LineChart(ctx).apply {
-                                        setupHistoryChart(this, chartTextColor, chartGridColor)
-                                        val entries = history.mapIndexed { i, s-> Entry(i.toFloat(), s.memory_usage.toFloat()) }
-                                        val dataset = LineDataSet(entries, "Memory %").apply{
-                                            color = MemoryChartColor.toArgb()
-                                            setDrawCircles(false)
-                                            lineWidth = 2f
-                                            setDrawFilled(true)
-                                            fillColor = MemoryChartColor.toArgb()
-                                            fillAlpha = 40
-                                            setDrawValues(false)
-                                        }
-                                        data = LineData(dataset)
-                                        setBackgroundColor(chartBgColor)
-                                        invalidate()
-                                    }
-                                },
-                                modifier = Modifier. fillMaxWidth().height(200.dp)
+
+
                             )
                         }
                     }
