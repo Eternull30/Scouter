@@ -93,7 +93,7 @@ fun HistoryScreen(
                             .fillMaxSize()
                             .padding()
                             .verticalScroll(rememberScrollState())
-                            .padding(16.dp),
+                            .padding(vertical = 16.dp),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) { Text(
                         "Last ${history.size} readings ${history.size * 10/60} minutes",
@@ -103,7 +103,8 @@ fun HistoryScreen(
 
                     val latest = history.first()
                     Text("Latest State", style = MaterialTheme.typography.titleLarge)
-                    Row(Modifier.fillMaxWidth(),
+                    Row(Modifier.fillMaxWidth()
+                        .padding(vertical = 16.dp),
                         horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                         StatCard("CPU", "${latest.cpu_percent}%", MaterialTheme.colorScheme.primary, Modifier.weight(1f))
                         StatCard("Memory", "${latest.memory_usage} MB", MaterialTheme.colorScheme.secondary, Modifier.weight(1f))
@@ -135,6 +136,7 @@ fun HistoryScreen(
                                     }
                                 },
                                 modifier = Modifier. fillMaxWidth().height(200.dp)
+                                    .padding()
                             )
                         }
                         ChartCard("Memory Usage(%)") {
@@ -144,7 +146,7 @@ fun HistoryScreen(
                                     LineChart(ctx).apply {
                                         setupHistoryChart(this, chartTextColor, chartGridColor)
                                         val entries = history.mapIndexed { i, s-> Entry(i.toFloat(), s.memory_usage.toFloat()) }
-                                        val dataset = LineDataSet(entries, "CPU %").apply{
+                                        val dataset = LineDataSet(entries, "Memory %").apply{
                                             color = MemoryChartColor.toArgb()
                                             setDrawCircles(false)
                                             lineWidth = 2f
