@@ -8,6 +8,7 @@ import com.jeet.dockermonitor.data.DockerRepository
 import com.jeet.dockermonitor.data.createApiService
 import com.jeet.dockermonitor.data.model.Container
 import com.jeet.dockermonitor.data.model.LiveStat
+import com.jeet.dockermonitor.data.model.StatHistory
 import com.jeet.dockermonitor.data.model.UiState
 import com.jeet.dockermonitor.di.dataStore
 import kotlinx.coroutines.flow.collectLatest
@@ -20,18 +21,17 @@ val KEY_PORT = stringPreferencesKey("docker_port")
 @Composable
 fun AppNavigation(){
     val context = LocalContext.current
-    val scope = rememberCoroutineScope()
+    val scope =  rememberCoroutineScope()
+//    App Stats
+    var host by remember {mutableStateOf<String?> (null)}
+    var port by remember {mutableStateOf(8000)}
+    var repository by remember {mutableStateOf<DockerRepository?>(null)}
 
-    // App State
-    var host by remember { mutableStateOf<String?>(null) }
-    var port by remember { mutableStateOf(8000) }
-    var repository by remember { mutableStateOf<DockerRepository?>(null) }
-
-    // Current Screen
+//    Current Screen
     var currentScreen by remember { mutableStateOf("setup") }
-    var selectedContainer by remember { mutableStateOf<Container?>(null) }
+    var selectedContainer by remember {mutableStateOf<Container?>(null)}
 
-    // Dashboard Screen
+//    Dashboard Screen
     var containers by remember { mutableStateOf<List<Container>>(emptyList()) }
     var isLoadingContainers by remember { mutableStateOf(false) }
     var containersError by remember { mutableStateOf("") }
@@ -40,11 +40,15 @@ fun AppNavigation(){
     var liveStat by remember { mutableStateOf<LiveStat?>(null) }
     var isWsConnected by remember { mutableStateOf(false) }
 
+    //History state
+    var historyList by remember { mutableStateOf<StatHistory?>(null) }
+    var isLoadingHistory by remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         context.dataStore.data.collectLatest { prefs ->
             val savedHost = prefs[KEY_HOST]
             val savedPort = prefs[KEY_PORT]?.toIntOrNull() ?: 8000
-            if (savedHost != null) {
+            if (savedHost != null){
                 host = savedHost
                 port = savedPort
                 val baseUrl = if (savedPort == 443) "https://$savedHost/" else "http://$savedHost:$savedPort/"
@@ -54,7 +58,6 @@ fun AppNavigation(){
             }
         }
     }
-
     // Load containers when on dashboard
     LaunchedEffect(currentScreen, repository) {
         if (currentScreen == "dashboard") {
@@ -84,7 +87,7 @@ fun AppNavigation(){
             liveStat = null
             try {
                 repo.observeLiveStats(container.name)
-                    .sample(1000)
+                    .sample(500) // update UI every 0.5 seconds instead of every second
                     .collectLatest { stat ->
                         liveStat = stat
                     }
@@ -102,6 +105,7 @@ fun AppNavigation(){
         "setup" -> SetupScreen(
             onConnect = { address, portNum ->
                 scope.launch {
+                    // Save to DataStore
                     context.dataStore.edit { prefs ->
                         prefs[KEY_HOST] = address
                         prefs[KEY_PORT] = portNum.toString()
@@ -125,7 +129,7 @@ fun AppNavigation(){
                     val repo = repository ?: return@launch
                     isLoadingContainers = true
                     containersError = ""
-                    when (val result = repo.getContainers(all = true)) {
+                    when (val result = repo.getContainers(all= true)) {
                         is UiState.Success -> {
                             containers = result.data
                             isLoadingContainers = false
@@ -144,6 +148,7 @@ fun AppNavigation(){
             },
             onDisconnect = {
                 scope.launch {
+                    // Clear saved host from DataStore
                     context.dataStore.edit { prefs ->
                         prefs.remove(KEY_HOST)
                         prefs.remove(KEY_PORT)
@@ -151,8 +156,7 @@ fun AppNavigation(){
                     repository = null
                     containers = emptyList()
                     currentScreen = "setup"
-                }
-            }
+                }}
         )
 
         "detail" -> DetailScreen(
@@ -178,15 +182,17 @@ fun AppNavigation(){
                 }
             },
             onHistory = {
-                currentScreen = "history"
+                selectedContainer?.let {
+                    currentScreen = "history"
+                }
             }
         )
 
         "history" -> HistoryScreen(
             containerName = selectedContainer?.name ?: "",
-            repository = repository,
-            onBack = {
-                currentScreen = "detail"
+            onBack = {currentScreen = "detail"}{
+                scope.launch {
+                    repository?.getHistory(selectedContainer?.name ?: "") }
             }
         )
     }

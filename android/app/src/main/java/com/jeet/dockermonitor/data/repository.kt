@@ -36,7 +36,7 @@ class DockerRepository(private val api: ApiService, private val wsBaseUrl:String
 
     suspend fun getHistory(containerId: String): UiState<List<StatHistory>>{
         return try {
-            UiState.Success(api.getHistory(containerId))
+            UiState.Success(api.getHistory(containerId, limit = 60))
         } catch (e: Exception){
             UiState.Error(e.message ?: "Unknown Error")
         }
